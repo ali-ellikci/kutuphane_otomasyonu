@@ -28,8 +28,8 @@ Bu masaüstü uygulaması, üniversite kütüphanesi işlemlerinin tam otomasyon
 |---------|-----------|
 | **Programlama Dili** | Python 3.x |
 | **GUI Framework** | PyQt5 |
-| **Veritabanı** | SQL Server / PostgreSQL / MySQL |
-| **Bağlantı** | pyodbc / psycopg2 / mysql-connector |
+| **Veritabanı** | PostgreSQL |
+| **Bağlantı** | psycopg2 |
 | **Stil** | QSS (Qt Style Sheets) |
 
 ---
@@ -245,7 +245,8 @@ Döndürülen Bilgiler:
 ```
 Python 3.7+
 PyQt5
-SQL Server / PostgreSQL / MySQL
+PostgreSQL 10+
+psycopg2 (PostgreSQL adaptörü)
 ```
 
 ### Kurulum Adımları
@@ -265,11 +266,7 @@ venv\Scripts\activate
 3. **Gerekli kütüphaneleri yükleyin:**
 ```bash
 pip install PyQt5
-pip install pyodbc  # SQL Server için
-# veya
-pip install psycopg2  # PostgreSQL için
-# veya
-pip install mysql-connector-python  # MySQL için
+pip install psycopg2-binary
 ```
 
 4. **Veritabanını oluşturun:**
@@ -285,27 +282,42 @@ python main.py
 
 ## 🔐 Bağlantı Ayarları (Database Connection Configuration)
 
-[database/connection.py](database/connection.py) dosyasında veritabanı bağlantı parametrelerini ayarlayın:
+[database/connection.py](database/connection.py) dosyasında PostgreSQL bağlantı parametrelerini ayarlayın:
 
 ```python
-# SQL Server Örneği
-DB_CONFIG = {
-    'server': 'localhost',
-    'database': 'KutuphaneDB',
-    'username': 'sa',
-    'password': 'yourpassword',
-    'driver': 'ODBC Driver 17 for SQL Server'
-}
-
-# PostgreSQL Örneği
+# PostgreSQL Bağlantı Ayarları
 DB_CONFIG = {
     'host': 'localhost',
     'database': 'kutuphanedb',
     'user': 'postgres',
-    'password': 'password',
+    'password': 'your_password',
     'port': 5432
 }
 ```
+
+### PostgreSQL Kurulumu ve Veritabanı Oluşturma
+
+1. **PostgreSQL sunucusunun çalıştığından emin olun**
+```bash
+# Linux/Mac
+psql --version
+
+# Windows - pgAdmin kullanabilirsiniz
+```
+
+2. **PostgreSQL'de yeni veritabanı oluşturun:**
+```bash
+createdb kutuphanedb -U postgres
+```
+
+3. **Schema ve tabloları oluşturun:**
+```bash
+psql -U postgres -d kutuphanedb -f database/schema.sql
+```
+
+4. **Bağlantı parametrelerini güncelleyin:**
+   - `database/connection.py` dosyasını açın
+   - Host, username, password ve port bilgilerini PostgreSQL konfigürasyonunuza göre ayarlayın
 
 ---
 

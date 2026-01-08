@@ -1,0 +1,56 @@
+CREATE TABLE UYE (
+    UyeID SERIAL PRIMARY KEY,
+    Ad VARCHAR(50) NOT NULL,
+    Soyad VARCHAR(50) NOT NULL,
+    Email VARCHAR(50) UNIQUE,
+    ToplamBorc NUMERIC(10,2) DEFAULT 0
+);
+
+CREATE TABLE KULLANICI (
+    KullaniciID SERIAL PRIMARY KEY,
+    Ad VARCHAR(50) NOT NULL,
+    Sifre VARCHAR(50) NOT NULL,
+    Rol VARCHAR(20)
+);
+
+CREATE TABLE CEZA (
+    CezaID SERIAL PRIMARY KEY,
+    Tutar NUMERIC(10,2),
+    CezaTarihi DATE,
+    OduncId NUMERIC
+);
+
+CREATE TABLE ODUNC (
+    OduncID SERIAL PRIMARY KEY,
+    OduncTarihi DATE,
+    SonTeslimTarihi DATE,
+    TeslimTarihi DATE,
+    UyeID NUMERIC,
+    GorevliID NUMERIC,
+    KitapID NUMERIC
+);
+
+CREATE TABLE KITAP(
+    KitapID SERIAL PRIMARY KEY,
+    KitapAdi VARCHAR(50),
+    Yazar VARCHAR(50),
+    YayinEvi VARCHAR(50),
+    BasimYili NUMERIC,
+    ToplamAdet NUMERIC,
+    MevcutAdet NUMERIC,
+    KategoriID NUMERIC
+);
+
+CREATE TABLE KATEGORI(
+    KategoriID SERIAL PRIMARY KEY,
+    KategoriAdi VARCHAR(50)
+);
+
+
+CREATE TABLE LOG_ISLEM(
+    LogID SERIAL PRIMARY KEY,
+    TabloAdi VARCHAR(50),
+    IslemTipi VARCHAR(50),
+    IslemZamani TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    Aciklama TEXT
+)
