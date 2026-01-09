@@ -13,21 +13,9 @@ CREATE TABLE KULLANICI (
     Rol VARCHAR(20)
 );
 
-CREATE TABLE CEZA (
-    CezaID SERIAL PRIMARY KEY,
-    Tutar NUMERIC(10,2),
-    CezaTarihi DATE,
-    OduncId NUMERIC
-);
-
-CREATE TABLE ODUNC (
-    OduncID SERIAL PRIMARY KEY,
-    OduncTarihi DATE,
-    SonTeslimTarihi DATE,
-    TeslimTarihi DATE,
-    UyeID NUMERIC,
-    GorevliID NUMERIC,
-    KitapID NUMERIC
+CREATE TABLE KATEGORI(
+    KategoriID SERIAL PRIMARY KEY,
+    KategoriAdi VARCHAR(50)
 );
 
 CREATE TABLE KITAP(
@@ -38,14 +26,25 @@ CREATE TABLE KITAP(
     BasimYili NUMERIC,
     ToplamAdet NUMERIC,
     MevcutAdet NUMERIC,
-    KategoriID NUMERIC
+    KategoriID INT
 );
 
-CREATE TABLE KATEGORI(
-    KategoriID SERIAL PRIMARY KEY,
-    KategoriAdi VARCHAR(50)
+CREATE TABLE ODUNC (
+    OduncID SERIAL PRIMARY KEY,
+    OduncTarihi DATE,
+    SonTeslimTarihi DATE,
+    TeslimTarihi DATE,
+    UyeID INT,
+    GorevliID INT,
+    KitapID INT
 );
 
+CREATE TABLE CEZA (
+    CezaID SERIAL PRIMARY KEY,
+    Tutar NUMERIC(10,2),
+    CezaTarihi DATE,
+    OduncID INT
+);
 
 CREATE TABLE LOG_ISLEM(
     LogID SERIAL PRIMARY KEY,
@@ -53,4 +52,4 @@ CREATE TABLE LOG_ISLEM(
     IslemTipi VARCHAR(50),
     IslemZamani TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     Aciklama TEXT
-)
+);

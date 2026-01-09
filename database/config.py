@@ -4,7 +4,7 @@ import os
 
 DB_NAME = os.getenv("PGDATABASE", "kutuphanedb")
 DB_USER = os.getenv("PGUSER", "postgres")
-DB_PASSWORD = os.getenv("PGPASSWORD", "your_password")
+DB_PASSWORD = os.getenv("PGPASSWORD", "Lacin123")
 DB_HOST = os.getenv("PGHOST", "localhost")
 DB_PORT = int(os.getenv("PGPORT", "5432"))
 

@@ -1,3 +1,4 @@
+from views.dashboard_window import DashboardWindow
 from PyQt5 import QtWidgets
 from controllers.auth_controller import AuthController
 
@@ -31,9 +32,15 @@ class LoginWindow(QtWidgets.QMainWindow):
 	def on_login(self):
 		username = self.username_input.text().strip()
 		password = self.password_input.text()
+
 		ok, message = self.controller.login(username, password)
+
 		if ok:
 			QtWidgets.QMessageBox.information(self, "Başarılı", message)
-			# TODO: Open dashboard window next
+			
+			self.dashboard = DashboardWindow(username)
+			self.dashboard.show()
+			self.close()
+
 		else:
 			QtWidgets.QMessageBox.warning(self, "Hata", message)
