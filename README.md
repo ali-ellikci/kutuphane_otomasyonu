@@ -309,7 +309,7 @@ python main.py
 
 1. **Projeyi klonlayın:**
 ```bash
-git clone https://github.com/username/kutuphane_otomasyonu.git
+git clone https://github.com/ali-ellikci/kutuphane_otomasyonu
 cd kutuphane_otomasyonu
 ```
 
