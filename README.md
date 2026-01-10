@@ -151,6 +151,14 @@ Döndürülen Bilgiler:
 - Aktif ödünç kaydı veya borcu olan üyenin silinmesini engelle
 - Uygun hata mesajı döndür
 
+### ⚠ Seed Verisi ve Tetikleyici Etkileşimi (Önemli)
+- `ODUNC` için tetikleyici insert sırasında stok azaltır. Eğer seed verisinde bir ödünç kaydı `TeslimTarihi` dolu olarak eklenirse, stok azaltılır fakat teslim tetikleyicisi çalışmaz; bu da stokta net −1 etkiye yol açar.
+- Önerilen yaklaşımlar:
+  - Seed sırasında önce `TeslimTarihi = NULL` ile ekleyip ardından `UPDATE` ile `TeslimTarihi` set edin (INSERT → stok −1, UPDATE → stok +1, net 0).
+  - Alternatif: `ODUNC` insert tetikleyicisini yalnızca `NEW.TeslimTarihi IS NULL` olduğunda stok azaltacak şekilde tasarlayın.
+- Seed dosyasını tekrar çalıştırma durumunda idempotentlik için sabit ID'ler yerine alt sorgu ile referans alın (ör. kategori/üye/kullanıcı/kitap ID'lerini isim veya email ile bulun).
+- Gerekirse ilk çalıştırmadan önce `TRUNCATE ... RESTART IDENTITY CASCADE;` ile temiz başlangıç yapın.
+
 ---
 
 ## 🖥️ Uygulama Ekranları (Application Screens)
@@ -343,7 +351,7 @@ python main.py
 
 ```python
 DB_NAME = os.getenv("PGDATABASE", "kutuphanedb")
-DB_USER = os.getenv("PGUSER", "postgres")
+DB_USER = os.getenv("PGUSER", "admin")  # varsayılan kullanıcı: admin
 DB_PASSWORD = os.getenv("PGPASSWORD", "<şifreniz>")
 DB_HOST = os.getenv("PGHOST", "localhost")
 DB_PORT = int(os.getenv("PGPORT", "5432"))
@@ -353,8 +361,8 @@ DB_PORT = int(os.getenv("PGPORT", "5432"))
 
 ```powershell
 $env:PGDATABASE = "kutuphanedb"
-$env:PGUSER = "postgres"
-$env:PGPASSWORD = "<sifre>"
+$env:PGUSER = "admin"       # kendi DB kullanıcınızı yazın
+$env:PGPASSWORD = "<sifre>"  # şifrenizi girin
 $env:PGHOST = "localhost"
 $env:PGPORT = "5432"
 ```
@@ -412,58 +420,9 @@ psql -U postgres -d kutuphanedb -f database/sql/05_seed_data.sql
 
 ---
 
-## 📊 Puanlama Kriterleri (Grading Rubric)
 
-| Kriter | Puan |
-|--------|------|
-| Veritabanı Tasarımı | 20 |
-| Constraint'ler ve Veri Bütünlüğü | 10 |
-| Saklı Yordamlar (3+ prosedür) | 15 |
-| Tetikleyiciler (2+ trigger) | 15 |
-| CRUD Ekranları Fonksiyonelliği | 15 |
-| Raporlama Ekranları (3+ rapor) | 10 |
-| Dinamik Sorgu Ekranı | 10 |
-| Proje Raporu ve Sunum | 5 |
-| **TOPLAM** | **100** |
 
----
 
-## 📝 Teslim Dosyaları (Deliverables)
 
-✅ Veritabanı script'i (CREATE TABLE, PROCEDURE, TRIGGER komutları)
-✅ Derlenebilir ve çalıştırılabilir uygulama kaynak kodu
-✅ Bağlantı ayarlarının yapılandırılması hakkında kısa not
-✅ Proje raporu (3-5 sayfa):
-  - Veritabanı şeması ve ER diyagramı
-  - Prosedür ve trigger'lar listesi
-  - Ekran görüntüleri ve açıklamaları
 
----
 
-## 🤝 Katkıda Bulunma (Contributing)
-
-Bu proje akademik amaçlı bir final projesidir. Katkılar hoş karşılanır!
-
----
-
-## 📄 Lisans (License)
-
-Bu proje eğitim amaçlıdır.
-
----
-
-## ✍️ Yazar Bilgisi
-
-**Proje:** Üniversite Kütüphanesi Yönetim Sistemi  
-**Ders:** Veritabanı Yönetim Sistemleri Final Projesi  
-**Tarih:** 2025
-
----
-
-## 📞 İletişim (Contact)
-
-Sorular ve önerileriniz için lütfen issue açınız.
-
----
-
-**Başarılı çalışmalar! 🎓**
