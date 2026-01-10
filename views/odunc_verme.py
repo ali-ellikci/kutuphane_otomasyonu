@@ -89,7 +89,7 @@ class OduncVermeWindow(QWidget):
         try:
             with get_connection() as conn:
                 with conn.cursor() as cur:
-                    cur.execute("SELECT sp_YeniOduncVer(%s, %s, %s)",
+                    cur.execute("CALL sp_YeniOduncVer(%s, %s, %s)",
                                 (uye_id, kitap_id, self.gorevli_id))
                 conn.commit()
 

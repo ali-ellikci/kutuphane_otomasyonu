@@ -40,6 +40,7 @@ Bu masaüstü uygulaması, üniversite kütüphanesi işlemlerinin tam otomasyon
 kutuphane_otomasyonu/
 ├── main.py                    # Ana uygulama giriş noktası
 ├── README.md                  # Bu dosya
+├── requirements.txt           # Python bağımlılıkları
 ├── assets/
 │   └── style.qss              # GUI stil dosyası
 ├── controllers/
@@ -47,19 +48,26 @@ kutuphane_otomasyonu/
 │   └── auth_controller.py     # Kimlik doğrulama kontrolleri
 ├── database/
 │   ├── __init__.py
+│   ├── config.py              # PostgreSQL bağlantı ayarları (ENV ile aşılabilir)
 │   ├── connection.py          # Veritabanı bağlantı yönetimi
-│   └── schema.sql             # Veritabanı şeması ve prosedürler
-├── models/
-│   ├── __init__.py
-│   ├── uye.py                 # Üye (Member) modeli
-│   ├── kitap.py               # Kitap (Book) modeli
-│   └── odunc.py               # Ödünç (Loan) modeli
-├── utils/
-│   ├── __init__.py
-│   └── helpers.py             # Yardımcı fonksiyonlar
+│   ├── setup_db.py            # Veritabanı oluşturma yardımcı betiği
+│   └── sql/                   # Şema, constraint, prosedür ve tetikleyiciler
+│       ├── 01_tables.sql
+│       ├── 02_constraints.sql
+│       ├── 03_procedures.sql
+│       ├── 04_triggers.sql
+│       └── 05_seed_data.sql
 └── views/
-    ├── __init__.py
-    └── login_window.py        # Giriş ekranı
+  ├── __init__.py
+  ├── login_window.py        # Giriş ekranı
+  ├── dashboard_window.py    # Ana menü
+  ├── uye_yonetimi.py        # Üye yönetimi
+  ├── uye_form.py            # Üye formu
+  ├── kitap_yonetimi.py      # Kitap yönetimi
+  ├── odunc_verme.py         # Ödünç verme
+  ├── ceza_goruntuleme.py    # Ceza görüntüleme
+  ├── uye_rapor.py           # Üye raporları
+  └── dinamik_sorgu.py       # Dinamik sorgu ekranı
 ```
 
 ---
@@ -247,9 +255,49 @@ Python 3.7+
 PyQt5
 PostgreSQL 10+
 psycopg2 (PostgreSQL adaptörü)
+PostgreSQL komut satırı aracı (psql) — opsiyonel ama önerilir
 ```
 
-### Kurulum Adımları
+### ⚡ Hızlı Başlangıç (Windows PowerShell)
+
+```powershell
+# 1) Sanal ortam oluştur ve etkinleştir
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+
+# 2) Bağımlılıkları yükle
+pip install -r requirements.txt
+
+# 3) (Önerilen) Ortam değişkenleriyle DB bağlantısını tanımla
+$env:PGDATABASE = "kutuphanedb"
+$env:PGUSER = "postgres"
+$env:PGPASSWORD = "<sifre>"
+$env:PGHOST = "localhost"
+$env:PGPORT = "5432"
+
+# 4) Veritabanını oluştur (yoksa oluşturur)
+python database/setup_db.py
+
+# 5) Şema ve verileri uygula (psql ile)
+# Not: psql yoksa pgAdmin üzerinden dosyaları sırayla çalıştırabilirsin.
+psql -U $env:PGUSER -d $env:PGDATABASE -h $env:PGHOST -p $env:PGPORT -f database/sql/01_tables.sql
+psql -U $env:PGUSER -d $env:PGDATABASE -h $env:PGHOST -p $env:PGPORT -f database/sql/02_constraints.sql
+psql -U $env:PGUSER -d $env:PGDATABASE -h $env:PGHOST -p $env:PGPORT -f database/sql/03_procedures.sql
+psql -U $env:PGUSER -d $env:PGDATABASE -h $env:PGHOST -p $env:PGPORT -f database/sql/04_triggers.sql
+psql -U $env:PGUSER -d $env:PGDATABASE -h $env:PGHOST -p $env:PGPORT -f database/sql/05_seed_data.sql
+
+# 6) Bağlantıyı test et (opsiyonel)
+python test_db.py
+
+# 7) Uygulamayı çalıştır
+python main.py
+```
+
+> psql komutu tanınmıyorsa, PostgreSQL kurulumundaki `bin` klasörünü PATH'e ekleyin
+> (ör: `C:\Program Files\PostgreSQL\16\bin`). Alternatif olarak pgAdmin ile `.sql`
+> dosyalarını sırayla çalıştırabilirsiniz.
+
+### Kurulum Adımları (Detaylı)
 
 1. **Projeyi klonlayın:**
 ```bash
@@ -270,29 +318,45 @@ pip install psycopg2-binary
 ```
 
 4. **Veritabanını oluşturun:**
-   - `database/schema.sql` dosyasını veritabanı sunucunuzda çalıştırın
-   - Bağlantı ayarlarını `database/connection.py` dosyasında yapılandırın
+  - `database/sql/01_tables.sql` → `05_seed_data.sql` dosyalarını sırasıyla çalıştırın
+  - Bağlantı ayarlarını `database/config.py` içinde veya ortam değişkenleriyle yapılandırın
 
 5. **Uygulamayı çalıştırın:**
 ```bash
 python main.py
 ```
 
+### Sık Karşılaşılan Sorunlar (Troubleshooting)
+- psql bulunamadı: PostgreSQL `bin` klasörünü PATH'e ekleyin veya pgAdmin kullanın.
+- Bağlantı hatası: PostgreSQL servisinin çalıştığını ve `database/config.py`/ortam
+  değişkenlerinin doğru ayarlandığını doğrulayın (host, port, kullanıcı, şifre, DB adı).
+- Yetki hataları: `postgres` kullanıcısının ilgili veritabanında gerekli yetkilere
+  sahip olduğundan emin olun.
+- Stil dosyası yüklenmiyor: `assets/style.qss` dosyası isteğe bağlıdır; eksikse uygulama
+  çalışmaya devam eder.
+
 ---
 
 ## 🔐 Bağlantı Ayarları (Database Connection Configuration)
 
-[database/connection.py](database/connection.py) dosyasında PostgreSQL bağlantı parametrelerini ayarlayın:
+[database/config.py](database/config.py) dosyasında PostgreSQL bağlantı parametreleri tanımlıdır ve ortam değişkenleriyle aşılabilir:
 
 ```python
-# PostgreSQL Bağlantı Ayarları
-DB_CONFIG = {
-    'host': 'localhost',
-    'database': 'kutuphanedb',
-    'user': 'postgres',
-    'password': 'your_password',
-    'port': 5432
-}
+DB_NAME = os.getenv("PGDATABASE", "kutuphanedb")
+DB_USER = os.getenv("PGUSER", "postgres")
+DB_PASSWORD = os.getenv("PGPASSWORD", "<şifreniz>")
+DB_HOST = os.getenv("PGHOST", "localhost")
+DB_PORT = int(os.getenv("PGPORT", "5432"))
+```
+
+Örnek kullanım (Windows PowerShell):
+
+```powershell
+$env:PGDATABASE = "kutuphanedb"
+$env:PGUSER = "postgres"
+$env:PGPASSWORD = "<sifre>"
+$env:PGHOST = "localhost"
+$env:PGPORT = "5432"
 ```
 
 ### PostgreSQL Kurulumu ve Veritabanı Oluşturma
@@ -312,7 +376,11 @@ createdb kutuphanedb -U postgres
 
 3. **Schema ve tabloları oluşturun:**
 ```bash
-psql -U postgres -d kutuphanedb -f database/schema.sql
+psql -U postgres -d kutuphanedb -f database/sql/01_tables.sql
+psql -U postgres -d kutuphanedb -f database/sql/02_constraints.sql
+psql -U postgres -d kutuphanedb -f database/sql/03_procedures.sql
+psql -U postgres -d kutuphanedb -f database/sql/04_triggers.sql
+psql -U postgres -d kutuphanedb -f database/sql/05_seed_data.sql
 ```
 
 4. **Bağlantı parametrelerini güncelleyin:**

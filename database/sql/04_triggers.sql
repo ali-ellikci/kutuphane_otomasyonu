@@ -1,6 +1,6 @@
--- ======================================================
--- ÖDÜNÇ INSERT → stok azalt + log
--- ======================================================
+
+-- ÖDÜNÇ INSERT = stok azalt + log
+
 CREATE OR REPLACE FUNCTION trg_odunc_insert()
 RETURNS TRIGGER AS $$
 BEGIN 
@@ -22,9 +22,9 @@ EXECUTE FUNCTION trg_odunc_insert();
 
 
 
--- ======================================================
--- TESLİM ALINDI → stok arttır + log
--- ======================================================
+
+-- TESLİM ALINDI = stok arttır + log
+
 CREATE OR REPLACE FUNCTION trg_odunc_update_teslim()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -48,9 +48,8 @@ EXECUTE FUNCTION trg_odunc_update_teslim();
 
 
 
--- ======================================================
--- CEZA → üyenin borcunu arttır + log
--- ======================================================
+-- CEZA = üyenin borcunu arttır + log
+
 CREATE OR REPLACE FUNCTION trg_ceza_insert()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -72,9 +71,9 @@ EXECUTE FUNCTION trg_ceza_insert();
 
 
 
--- ======================================================
+
 -- BORCU / AKTİF ÖDÜNCÜ OLAN ÜYE SİLİNEMEZ
--- ======================================================
+
 CREATE OR REPLACE FUNCTION trg_uye_delete_block()
 RETURNS TRIGGER AS $$
 BEGIN

@@ -101,8 +101,8 @@ class KitapYonetimiWindow(QWidget):
             with get_connection() as conn:
                 with conn.cursor() as cur:
                     cur.execute("""
-                        SELECT sp_KitapEkleVeyaGuncelle(
-                            NULL, %s, %s, %s, %s, %s, %s
+                        CALL sp_KitapEkleVeyaGuncelle(
+                            %s, %s, %s, %s, %s, %s, NULL
                         )
                     """, (
                         self.kitap_adi.text(),

@@ -1,12 +1,12 @@
--- =========================
+
 -- 1. Yeni Ödünç Verme
--- =========================
-CREATE OR REPLACE FUNCTION sp_YeniOduncVer(
+
+CREATE OR REPLACE PROCEDURE sp_YeniOduncVer(
     p_UyeID INT,
     p_KitapID INT,
     p_IslemYapanKullaniciID INT
 )
-RETURNS VOID AS $$
+AS $$
 DECLARE
     v_AktifOdunc INT;
     v_MevcutAdet INT;
@@ -43,14 +43,14 @@ $$ LANGUAGE plpgsql;
 
 
 
--- =========================
+
 -- 2. Kitap Teslim Alma
--- =========================
-CREATE OR REPLACE FUNCTION sp_KitapTeslimAl(
+
+CREATE OR REPLACE PROCEDURE sp_KitapTeslimAl(
     p_OduncID INT,
     p_TeslimTarihi DATE
 )
-RETURNS VOID AS $$
+AS $$
 DECLARE
     v_SonTeslim DATE;
     v_GecikmeGun INT;
@@ -82,9 +82,9 @@ $$ LANGUAGE plpgsql;
 
 
 
--- =========================
+
 -- 3. Üye Özet Rapor
--- =========================
+
 CREATE OR REPLACE FUNCTION sp_UyeOzetRapor(p_UyeID INT)
 RETURNS TABLE(
     ToplamAlinanKitap INT,
@@ -104,11 +104,9 @@ $$ LANGUAGE plpgsql;
 
 
 
--- =========================
+
 -- 4. Kitap Ekle / Güncelle
--- (DEFAULT HATASI DÜZELTİLDİ)
--- =========================
-CREATE OR REPLACE FUNCTION sp_KitapEkleVeyaGuncelle(
+CREATE OR REPLACE PROCEDURE sp_KitapEkleVeyaGuncelle(
     p_KitapAdi VARCHAR,
     p_Yazar VARCHAR,
     p_YayinEvi VARCHAR,
@@ -117,7 +115,7 @@ CREATE OR REPLACE FUNCTION sp_KitapEkleVeyaGuncelle(
     p_KategoriID INT,
     p_KitapID INT DEFAULT NULL
 )
-RETURNS VOID AS $$
+AS $$
 BEGIN
     IF p_KitapID IS NULL THEN
         INSERT INTO KITAP(KitapAdi, Yazar, YayinEvi, BasimYili, ToplamAdet, MevcutAdet, KategoriID)
@@ -138,9 +136,9 @@ $$ LANGUAGE plpgsql;
 
 
 
--- =========================
+
 -- 5. Dinamik Kitap Arama
--- =========================
+
 CREATE OR REPLACE FUNCTION sp_KitapAra(
     p_KitapAdi VARCHAR DEFAULT NULL,
     p_Yazar VARCHAR DEFAULT NULL,

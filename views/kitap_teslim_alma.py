@@ -73,7 +73,7 @@ class OduncTeslimWindow(QWidget):
         try:
             with get_connection() as conn:
                 with conn.cursor() as cur:
-                    cur.execute("SELECT sp_KitapTeslimAl(%s, %s)", (odunc_id, teslim_tarihi))
+                    cur.execute("CALL sp_KitapTeslimAl(%s, %s)", (odunc_id, teslim_tarihi))
                 conn.commit()
 
             QMessageBox.information(self, "Başarılı", "Kitap teslim alındı.")
